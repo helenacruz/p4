@@ -318,6 +318,15 @@ class StateRegister {
         this.C = 0;
         this.Z = 0;
     }
+    copy() {
+        const newState = new StateRegister();
+        newState.E = this.E;
+        newState.O = this.O;
+        newState.N = this.N;
+        newState.C = this.C;
+        newState.Z = this.Z;
+        return newState;
+    }
 }
 
 /** Class representing the Register Bank. */
@@ -389,7 +398,7 @@ class Hardware {
         this.stateRegister.E = 0;
         this.interrupt.ret = this.PC;
         this.PC = this.interrupt.dest;
-        this.oldStateRegister = Object.assign({}, this.stateRegister);
+        this.oldStateRegister = this.stateRegister.copy();
     }
     setInterrupt(i, isIntInstruction) {
         console.log("SET INTERRUPT", i, isIntInstruction, this.stateRegister.E);
@@ -639,7 +648,7 @@ const sim = window.sim = {
             DSI: () => () => hw.stateRegister.E = 0,
             RTI: () => () => {
                 hw.PC = hw.interrupt.ret;
-                hw.stateRegister = Object.assign({}, hw.oldStateRegister);
+                hw.stateRegister = hw.oldStateRegister.copy();
                 hw.stateRegister.E = hw.interrupt.E;
                 hw.nextInterrupt();
             },
