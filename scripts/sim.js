@@ -355,6 +355,7 @@ class Hardware {
         this.interrupt = {interrupt: false, dest: 0, ret: 0, pending: {}, E: 0};
         this.PC = 0;
         this.stateRegister = new StateRegister();
+        this.oldStateRegister = new StateRegister();
         this.registerBank = new RegisterBank();
         this.IO = new IO();
         this.programMemory = new Uint16Array(32768);
@@ -388,6 +389,7 @@ class Hardware {
         this.stateRegister.E = 0;
         this.interrupt.ret = this.PC;
         this.PC = this.interrupt.dest;
+        this.oldStateRegister = Object.assign({}, this.stateRegister);
     }
     setInterrupt(i, isIntInstruction) {
         console.log("SET INTERRUPT", i, isIntInstruction, this.stateRegister.E);
@@ -636,8 +638,9 @@ const sim = window.sim = {
             },
             DSI: () => () => hw.stateRegister.E = 0,
             RTI: () => () => {
-                hw.stateRegister.E = hw.interrupt.E;
                 hw.PC = hw.interrupt.ret;
+                hw.stateRegister = Object.assign({}, hw.oldStateRegister);
+                hw.stateRegister.E = hw.interrupt.E;
                 hw.nextInterrupt();
             },
             INT: C => () => hw.setInterrupt(C, true),
