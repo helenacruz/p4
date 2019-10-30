@@ -31,7 +31,7 @@ i18n.dics.pt = {
     "Data Memory": `Memória de Dados`,
     "Edit Text": `Editar Texto`,
     "Edit Font": `Editar Fonte`,
-    "Board Interface": `Interface com a Placa`,
+    "Board Control": `Controlo da Placa`,
     "Search Devices": `Procurar Dispositivos`,
     "Install P4": `Instalar o P4`,
     "Write Memory": `Escrever Memória`,
@@ -138,5 +138,6 @@ i18n.dics.pt = {
     "No Devices Found": `Nenhum Dispositivo Encontrado`,
     "No device selected.": `Nenhum dispositivo selecionado.`,
     "No devices found.": `Nenhum dispositivo encontrado.`,
-    "$1 environment variable not defined.": `A variável de ambiente $1 não está definida.`
+    "$1 environment variable not defined.": `A variável de ambiente $1 não está definida.`,
+    "Report bugs.": "Reportar bugs."
 };

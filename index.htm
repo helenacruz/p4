@@ -157,7 +157,7 @@
     </div>
     <div id="boardContainer">
         <div class="stickyHeader">
-            <div data-i18n class="title">Board Interface</div>
+            <div data-i18n class="title">Board Control</div>
         </div>
         <div id="boardControlAvailable">
             <p id="boardMessage"></p>
@@ -169,7 +169,6 @@
                 <span id="boardControlDevice">
                     <button id="boardInstallP4" data-i18n>Install P4</button>
                     <p>
-                        <div class="separator" data-i18n>Memory Write</div>
                         <div id="boardMemoryGrid">
                             <label><input type="checkbox" id="checkProgramMIF" checked /><span data-i18n>Program</span></label>
                             <input type="text" class="round large" id="programMIF" data-filepicker=".mif,.hex" readonly placeholder="Assembled Program" />
@@ -187,9 +186,8 @@
                     </p>
                     <button id="boardInstallMIF" data-i18n>Write Selected Memories</button>
                     <div id="boardControl">
-                        <div class="separator" data-i18n>Debug</div>
-                        <div id="boardPCRI">PC: <span id="boardPC">0000</span> RI: <span id="boardRI">0000</span></div>
-                        <div id="boardInstruction">&nbsp;</div>
+                        <pre>PC: <span id="boardPC">0000</span> RI: <span id="boardRI">0000</span></pre>
+                        <pre id="boardInstruction">&nbsp;</pre>
                         <p>
                             <!-- <button id="boardUpdateAuto" data-i18n>Auto Update</button> -->
                             <button id="boardUpdate" data-i18n>Update</button>
@@ -205,7 +203,6 @@
                     </div>
                 </span>
             </div>
-            <div class="separator" data-i18n>Log Window</div>
             <textarea id="boardConsole" readonly></textarea>
         </div>
         <div id="boardControlUnavailable">
@@ -223,6 +220,8 @@
         <span>
             <a id="backupSettings" target="_blank" download="P4.bak.json" href="javascript:" data-i18n>Backup Files and Settings.</a>
             <a id="restoreSettings" href="javascript:" data-i18n>Restore a Backup.</a>
+            <a id="reportBugs" href="http://algos.inesc-id.pt/arq-comp/?&mailform" target="_blank" data-i18n>Report bugs.</a>
+
         </span>
         <span>
             <span data-i18n>Language</span>:
