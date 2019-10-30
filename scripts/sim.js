@@ -477,7 +477,7 @@ const ALU = (unit, op, RC, RA, RB) => {
             //               left ----------   right -------
             carry = op & 1 ? () => a() >> 15 : () => a() & 1;
             switch (op) {
-                case ALU.SHR: r = () => a() >> 1; break; // SHR
+                case ALU.SHR: r = () => a() >>> 1; break; // SHR
                 case ALU.SHL: r = () => a() << 1; break; // SHL
                 case ALU.SHRA: r = () => (a() >> 1) | ((a() >> 15) << 15); break; // SHRA
                 case ALU.SHLA: r = () => a() << 1; overflow = r => ((a() >>> 15) ^ (r >>> 15)); break; // SHLA
