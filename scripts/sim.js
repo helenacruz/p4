@@ -308,8 +308,12 @@ class Timer {
 
 /** Class representing the State Register. */
 class StateRegister {
-    constructor() {
-        this.reset();
+    constructor(E = 0, O = 0, N = 0, C = 0, Z = 0) {
+        this.E = E;
+        this.O = O;
+        this.N = N;
+        this.C = C;
+        this.Z = Z;
     }
     reset() {
         this.E = 0;
@@ -319,13 +323,7 @@ class StateRegister {
         this.Z = 0;
     }
     copy() {
-        const newState = new StateRegister();
-        newState.E = this.E;
-        newState.O = this.O;
-        newState.N = this.N;
-        newState.C = this.C;
-        newState.Z = this.Z;
-        return newState;
+        return new StateRegister(this.E, this.O, this.N, this.C, this.Z);
     }
 }
 
@@ -393,12 +391,13 @@ class Hardware {
     }
     attendInterrupt() {
         console.log("ATTEND INTERRUPT", this.interrupt.dest.toString(16));
+        this.oldStateRegister = this.stateRegister.copy();
+        console.log("attend old state: " + JSON.stringify(this.oldStateRegister));
         this.interrupt.interrupt = false;
         this.interrupt.E = this.stateRegister.E;
         this.stateRegister.E = 0;
         this.interrupt.ret = this.PC;
         this.PC = this.interrupt.dest;
-        this.oldStateRegister = this.stateRegister.copy();
     }
     setInterrupt(i, isIntInstruction) {
         console.log("SET INTERRUPT", i, isIntInstruction, this.stateRegister.E);
@@ -648,7 +647,14 @@ const sim = window.sim = {
             DSI: () => () => hw.stateRegister.E = 0,
             RTI: () => () => {
                 hw.PC = hw.interrupt.ret;
-                hw.stateRegister = hw.oldStateRegister.copy();
+                console.log("rti interrupt state: " + JSON.stringify(hw.stateRegister));
+                // hw.stateRegister = hw.oldStateRegister.copy();
+                //hw.stateRegister.E = hw.oldStateRegister.E;
+                hw.stateRegister.Z = hw.oldStateRegister.Z;
+                hw.stateRegister.O = hw.oldStateRegister.O;
+                hw.stateRegister.N = hw.oldStateRegister.N;
+                hw.stateRegister.C = hw.oldStateRegister.C;
+                console.log("rti old state: " + JSON.stringify(hw.oldStateRegister));
                 hw.stateRegister.E = hw.interrupt.E;
                 hw.nextInterrupt();
             },
