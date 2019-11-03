@@ -139,5 +139,6 @@ i18n.dics.pt = {
     "No device selected.": `Nenhum dispositivo selecionado.`,
     "No devices found.": `Nenhum dispositivo encontrado.`,
     "$1 environment variable not defined.": `A variável de ambiente $1 não está definida.`,
-    "Report bugs.": "Reportar bugs."
+    "Report bugs.": "Reportar bugs.",
+    "Version": "Versão"
 };
