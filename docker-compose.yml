@@ -1,0 +1,12 @@
+web:
+   image: nginx:1.17.3-alpine
+   volumes:
+    - ./:/usr/share/nginx/html
+    - ./nginx.conf:/etc/nginx/conf.d/p4.conf
+   ports:
+    - "80:80"
+   environment:
+    - NGINX_HOST=localhost
+    - NGINX_PORT=80
+
+
