@@ -323,7 +323,12 @@ class StateRegister {
         this.Z = 0;
     }
     copy() {
-        return new StateRegister(this.E, this.O, this.N, this.C, this.Z);
+        return new StateRegister(
+            this.E, 
+            this.O, 
+            this.N, 
+            this.C, 
+            this.Z);
     }
 }
 
@@ -392,7 +397,6 @@ class Hardware {
     attendInterrupt() {
         console.log("ATTEND INTERRUPT", this.interrupt.dest.toString(16));
         this.oldStateRegister = this.stateRegister.copy();
-        console.log("attend old state: " + JSON.stringify(this.oldStateRegister));
         this.interrupt.interrupt = false;
         this.interrupt.E = this.stateRegister.E;
         this.stateRegister.E = 0;
@@ -441,7 +445,6 @@ class Hardware {
 const ALU = (unit, op, RC, RA, RB) => {
     
     const hw = sim.hardware;
-    const state = hw.stateRegister;
 
     const a = () => hw.registerBank.registers[RA]; // function that retrieves RA's value from the Register Bank
     const b = () => hw.registerBank.registers[RB]; // function that retrieves RB's value from the Register Bank
@@ -465,8 +468,8 @@ const ALU = (unit, op, RC, RA, RB) => {
             switch (op) {
                 case ALU.ADD:  r = () => a() + b(); break; // ADD
                 case ALU.SUB:  r = () => a() - b(); break; // SUB
-                case ALU.ADDC: r = () => a() + b() + state.C; break; // ADDC
-                case ALU.SUBB: r = () => a() - b() - (state.C ^ 1); break; // SUBB
+                case ALU.ADDC: r = () => a() + b() + hw.stateRegister.C; break; // ADDC
+                case ALU.SUBB: r = () => a() - b() - (hw.stateRegister.C ^ 1); break; // SUBB
                 case ALU.DEC:  r = () => a() - 1; overflow = r => a() >> 15 & ~(r >> 15); break; // overflow when a is negative and r is positive
                 case ALU.INC:  r = () => a() + 1; overflow = r => ~(a() >> 15) & r >> 15; break; // overflow when a is positive and r is negative
             }
@@ -493,8 +496,8 @@ const ALU = (unit, op, RC, RA, RB) => {
                 case ALU.SHLA: r = () => a() << 1; overflow = r => ((a() >>> 15) ^ (r >>> 15)); break; // SHLA
                 case ALU.ROR: r = () => ((a() & 1) << 15) | (a() >> 1); break; // ROR
                 case ALU.ROL: r = () => (a() << 1) | (a() >> 15); break; // ROL
-                case ALU.RORC: r = () => (state.C << 15) | (a() >> 1); break; // RORC
-                case ALU.ROLC: r = () => (a() << 1) | state.C; break; // ROLC
+                case ALU.RORC: r = () => (hw.stateRegister.C << 15) | (a() >> 1); break; // RORC
+                case ALU.ROLC: r = () => (a() << 1) | hw.stateRegister.C; break; // ROLC
             }
             break;
         }
@@ -503,12 +506,12 @@ const ALU = (unit, op, RC, RA, RB) => {
     
     return () => {
         const result32 = r();                       // compute 32 bit result
-        if (carry) state.C = carry(result32);       // compute carry state bit based on the 32 bit result
+        if (carry) hw.stateRegister.C = carry(result32);       // compute carry state bit based on the 32 bit result
         
         const result = result32 & 65535;            // convert result to 16 bits
-        if (overflow) state.O = overflow(result);   // compute overflow state bit
-        state.N = result >> 15;                     // compute negative state bit
-        state.Z = result === 0 ? 1 : 0;             // compute zero state bit
+        if (overflow) hw.stateRegister.O = overflow(result);   // compute overflow state bit
+        hw.stateRegister.N = result >> 15;                     // compute negative state bit
+        hw.stateRegister.Z = result === 0 ? 1 : 0;             // compute zero state bit
         hw.registerBank.write(RC, result);          // write result to RC
     };
 };
@@ -647,14 +650,7 @@ const sim = window.sim = {
             DSI: () => () => hw.stateRegister.E = 0,
             RTI: () => () => {
                 hw.PC = hw.interrupt.ret;
-                console.log("rti interrupt state: " + JSON.stringify(hw.stateRegister));
-                // hw.stateRegister = hw.oldStateRegister.copy();
-                //hw.stateRegister.E = hw.oldStateRegister.E;
-                hw.stateRegister.Z = hw.oldStateRegister.Z;
-                hw.stateRegister.O = hw.oldStateRegister.O;
-                hw.stateRegister.N = hw.oldStateRegister.N;
-                hw.stateRegister.C = hw.oldStateRegister.C;
-                console.log("rti old state: " + JSON.stringify(hw.oldStateRegister));
+                hw.stateRegister = hw.oldStateRegister.copy();
                 hw.stateRegister.E = hw.interrupt.E;
                 hw.nextInterrupt();
             },
